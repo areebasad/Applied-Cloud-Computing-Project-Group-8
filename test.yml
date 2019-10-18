@@ -1,0 +1,168 @@
+#################
+# A comprehensive implementation of injecting public keys is available on following URL:
+#
+#https://github.com/openstack/heat-templates/blob/master/hot/software-config/example-templates/example-ssh-copy-id.yaml
+#################
+
+
+heat_template_version: 2013-05-23
+
+description: YouWu WCaaS Testing Cluster
+
+# Declare parameters 
+parameters:
+
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for compute instance
+    default: dca488d5-ca09-458f-8983-898d3ddcfd2b
+
+  flavor:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used
+    default: ACCHT18.normal
+
+  key:
+    type: string
+    label: Key name
+    description: Name of key-pair to be used for compute instance
+    default: yowu4139
+
+  public_network:
+    type: string
+    label: Public network name or ID
+    description: Public network with floating IP addresses.
+    default: Public External IPv4 Network
+
+# Resource allocation
+resources:
+  cluster_sg:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: cluster_sg
+      rules:
+        - protocol: icmp
+        - protocol: tcp
+          port_range_min: 22
+          port_range_max: 9999
+ 
+  private_network:
+    type: OS::Neutron::Net
+
+  private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_network }
+      cidr: 10.10.10.0/24
+      dns_nameservers:
+        - 130.238.164.6 
+        - 130.238.4.133 
+        - 130.238.7.10
+        - 130.239.1.90
+        - 129.16.1.53
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_network }
+
+  router-interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet: { get_resource: private_subnet }
+
+  instance_port0:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: private_network }
+      security_groups:
+        - { get_resource: cluster_sg }
+  instance_port1:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: private_network }
+      security_groups:
+        - { get_resource: cluster_sg }
+
+  yowu_worker1:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      #security_groups:
+        #- { get_resource: cluster_sg }
+      networks:
+        - port: { get_resource: instance_port0 }         
+      user_data: |
+        #!/bin/sh
+        echo "Hello, World!"
+        echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQDqoHeGL9Q16+qK3IEu1910/frUdhkdULkEKXVlpoHe8+2ShUoYfheyBRpb4ZHn/Bqq+dOPNNP5v0xd7q7kEMaQ++ymiildAWeU/4NabvqMxcSHU1dJoCIFz5487wvtSpWs5zUjl+yBdUd4bN1eV/SwgOuc5wOtVTBUugbfyYkRcxUv7oztYxnLRlAstxx0gOp+AGpRdauMuP5K19FBqCiDq5o0bBfkm111KaOW7H1Iq+tuIZIDI8j1B8tthwlQf3d2RHLNnvkC/R3Ijox++PeC2qpYPDszmF+1u5s4gWKCwgPWtK/4pr2rxcAVTJzN/l9wsfVNEGa+zxeox1KjWFTT" >> /home/ubuntu/.ssh/authorized_keys
+        apt-add-repository -y ppa:ansible/ansible
+        apt-get update -y
+        apt-get upgrade -y
+        apt-get install -y rabbitmq-server
+        apt-get install -y python3-pip
+        pip3 install --upgrade pip
+        export LC_ALL=C
+        pip install celery==3.1.25
+        pip install gdown
+        git clone https://github.com/YouWuCN/dummy.git
+        cd dummy
+        gdown https://drive.google.com/uc?id=
+        tar -xvf data.tar.gz
+        celery -A tasks worker --loglevel=info &
+      user_data_format: RAW
+
+  yowu_worker2:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      #security_groups:
+        #- { get_resource: cluster_sg }
+      networks:
+        - port: { get_resource: instance_port1 }
+      user_data: |
+        #!/bin/sh
+        echo "Hello, World!"
+        echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQDqoHeGL9Q16+qK3IEu1910/frUdhkdULkEKXVlpoHe8+2ShUoYfheyBRpb4ZHn/Bqq+dOPNNP5v0xd7q7kEMaQ++ymiildAWeU/4NabvqMxcSHU1dJoCIFz5487wvtSpWs5zUjl+yBdUd4bN1eV/SwgOuc5wOtVTBUugbfyYkRcxUv7oztYxnLRlAstxx0gOp+AGpRdauMuP5K19FBqCiDq5o0bBfkm111KaOW7H1Iq+tuIZIDI8j1B8tthwlQf3d2RHLNnvkC/R3Ijox++PeC2qpYPDszmF+1u5s4gWKCwgPWtK/4pr2rxcAVTJzN/l9wsfVNEGa+zxeox1KjWFTT" >> /home/ubuntu/.ssh/authorized_keys
+        apt-get update -y
+        apt-get upgrade -y
+        apt-get install -y rabbitmq-server
+        apt-get install -y python3-pip
+        pip3 install --upgrade pip
+        export LC_ALL=C
+        pip install celery==3.1.25
+        pip install gdown
+        git clone https://github.com/YouWuCN/dummy.git
+        cd dummy
+        gdown https://drive.google.com/uc?id=
+        tar -xvf data.tar.gz
+        celery -A tasks worker --loglevel=info &
+      user_data_format: RAW
+
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: public_network }
+
+  floating_ip_assoc:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_resource: instance_port0} 
+
+# Output in case of successful booting
+outputs:
+  instance_name:
+    description: Name of the instance
+    value: { get_attr: [yowu_worker1, name] }
+  instance_ip:
+    description: IP address of the instance
+    value: { get_attr: [yowu_worker1, first_address, floating_ip, floating_ip_address] }
