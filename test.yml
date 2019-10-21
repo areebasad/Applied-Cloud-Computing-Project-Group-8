@@ -7,7 +7,7 @@
 
 heat_template_version: 2013-05-23
 
-description: YouWu WCaaS Testing Cluster
+description: Group8 Airfoil Testing Cluster
 
 # Declare parameters 
 parameters:
@@ -28,7 +28,7 @@ parameters:
     type: string
     label: Key name
     description: Name of key-pair to be used for compute instance
-    default: yowu4139
+    default: groupkey
 
   public_network:
     type: string
@@ -121,9 +121,9 @@ resources:
         sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
         getID() { sudo docker ps | grep ago| cut -b 1-12;}
         export ID=$(getID)
-        sudo docker exec -t -i $ID /bin/bash
         git clone https://github.com/Sprogis/murtazo.git
-        cp murtazo/murtazo.tgz /home/fenics/shared/.
+        sudo docker cp murtazo/murtazo.tgz $ID:/home/fenics/shared/.
+        sudo docker exec -t -i $ID /bin/bash
         tar -xzvf murtazo.tgz 
         cd murtazo
         tar -xvf cloudnaca.tgz
@@ -177,9 +177,9 @@ resources:
         sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
         getID() { sudo docker ps | grep ago| cut -b 1-12;}
         export ID=$(getID)
-        sudo docker exec -t -i $ID /bin/bash
         git clone https://github.com/Sprogis/murtazo.git
-        cp murtazo/murtazo.tgz /home/fenics/shared/.
+        sudo docker cp murtazo/murtazo.tgz $ID:/home/fenics/shared/.
+        sudo docker exec -t -i $ID /bin/bash
         tar -xzvf murtazo.tgz 
         cd murtazo
         tar -xvf cloudnaca.tgz
