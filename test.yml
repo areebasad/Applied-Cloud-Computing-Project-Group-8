@@ -22,7 +22,7 @@ parameters:
     type: string
     label: Flavor
     description: Type of instance (flavor) to be used
-    default: ACCHT18.normal
+    default: 8d704ef9-74dc-495e-9e2b-baebc6775b16
 
   key:
     type: string
@@ -107,6 +107,8 @@ resources:
         apt-get upgrade -y
         apt-cache policy docker-ce
         apt-get install -y docker-ce
+        sudo touch /etc/docker/daemon.json
+        sudo echo "{\"mtu\":1450}" >> /etc/docker/daemon.json
         sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
         getID() {sudo docker ps | grep ago| cut -b 1-12;}
         export ID=$(getID)
@@ -161,6 +163,8 @@ resources:
         apt-get upgrade -y
         apt-cache policy docker-ce
         apt-get install -y docker-ce
+        sudo touch /etc/docker/daemon.json
+        sudo echo "{\"mtu\":1450}" >> /etc/docker/daemon.json
         sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
         getID() {sudo docker ps | grep ago| cut -b 1-12;}
         export ID=$(getID)
@@ -193,6 +197,7 @@ resources:
         git clone https://github.com/YouWuCN/dummy.git
         cd dummy
         celery -A tasks worker --loglevel=info &
+
       user_data_format: RAW
 
 
