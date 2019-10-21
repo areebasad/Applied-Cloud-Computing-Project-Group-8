@@ -100,10 +100,36 @@ resources:
       user_data: |
         #!/bin/sh
         echo "Hello, World!"
-        echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQDqoHeGL9Q16+qK3IEu1910/frUdhkdULkEKXVlpoHe8+2ShUoYfheyBRpb4ZHn/Bqq+dOPNNP5v0xd7q7kEMaQ++ymiildAWeU/4NabvqMxcSHU1dJoCIFz5487wvtSpWs5zUjl+yBdUd4bN1eV/SwgOuc5wOtVTBUugbfyYkRcxUv7oztYxnLRlAstxx0gOp+AGpRdauMuP5K19FBqCiDq5o0bBfkm111KaOW7H1Iq+tuIZIDI8j1B8tthwlQf3d2RHLNnvkC/R3Ijox++PeC2qpYPDszmF+1u5s4gWKCwgPWtK/4pr2rxcAVTJzN/l9wsfVNEGa+zxeox1KjWFTT" >> /home/ubuntu/.ssh/authorized_keys
-        apt-add-repository -y ppa:ansible/ansible
+        echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQC0mQVQ9hn2ns0R0bk1ud2XzltbJ86ynUMmFumVGe8uQEyxQncnW9UrCw+YLPQ9oBiUegzmTKBF6tx4jzOj2RyocFlq6Qkl/Aog7w70qSFEEc9ZR8EjigGe89FkRo/F6mU5kYiJFIJ3NyCeNXN6+IMlwO6yuZB/izWli8CwKZw8XPEqZ8HiK0eUaOGLhXm9jo0lUpPHLpTqo5cWQXRr6M7CMuX2t/vFD2rTnY/ddeswbIkrmFkNysfVfr1le26x72Tf3CxtCTd3Lkds+ide/Z/sUDRc0ZQTL0GY8ecU4/xNiVO7WHkZbLQ7XyS8LoqfWPzBYf0K6F2JhO5cxprfyI7H" >> /home/ubuntu/.ssh/authorized_keys
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
         apt-get update -y
         apt-get upgrade -y
+        apt-cache policy docker-ce
+        apt-get install -y docker-ce
+        sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
+        getID() {sudo docker ps | grep ago| cut -b 1-12;}
+        export ID=$(getID)
+        sudo docker exec -t -i $ID /bin/bash
+        git clone https://github.com/Sprogis/murtazo.git
+        cp murtazo/murtazo.tgz /home/fenics/shared/.
+        tar -xzvf murtazo.tgz 
+        cd murtazo
+        tar -xvf cloudnaca.tgz
+        tar -xvf navier_stokes_solver.tar
+        cd navier_stokes_solver/src
+        ./compile_forms
+        cd ..
+        cmake .
+        make -j 2
+        cd ../cloudnaca
+        apt-get update
+        apt-get install -y gmsh 
+        sed -i '\/Applications\/Gmsh.app\/Contents\/MacOS\/gmsh/c\GMSHBIN=\"\/usr\/bin\/gmsh\"' runme.sh
+        apt install -y python-numpy
+        ./runme.sh 0 30 10 200 3
+        cd msh
+        for file in *.msh; do dolfin-convert "$file" "${file/%.msh/.xml}" ; done
         apt-get install -y rabbitmq-server
         apt-get install -y python3-pip
         pip3 install --upgrade pip
@@ -112,8 +138,6 @@ resources:
         pip install gdown
         git clone https://github.com/YouWuCN/dummy.git
         cd dummy
-        gdown https://drive.google.com/uc?id=
-        tar -xvf data.tar.gz
         celery -A tasks worker --loglevel=info &
       user_data_format: RAW
 
@@ -130,9 +154,36 @@ resources:
       user_data: |
         #!/bin/sh
         echo "Hello, World!"
-        echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQDqoHeGL9Q16+qK3IEu1910/frUdhkdULkEKXVlpoHe8+2ShUoYfheyBRpb4ZHn/Bqq+dOPNNP5v0xd7q7kEMaQ++ymiildAWeU/4NabvqMxcSHU1dJoCIFz5487wvtSpWs5zUjl+yBdUd4bN1eV/SwgOuc5wOtVTBUugbfyYkRcxUv7oztYxnLRlAstxx0gOp+AGpRdauMuP5K19FBqCiDq5o0bBfkm111KaOW7H1Iq+tuIZIDI8j1B8tthwlQf3d2RHLNnvkC/R3Ijox++PeC2qpYPDszmF+1u5s4gWKCwgPWtK/4pr2rxcAVTJzN/l9wsfVNEGa+zxeox1KjWFTT" >> /home/ubuntu/.ssh/authorized_keys
+        echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQC0mQVQ9hn2ns0R0bk1ud2XzltbJ86ynUMmFumVGe8uQEyxQncnW9UrCw+YLPQ9oBiUegzmTKBF6tx4jzOj2RyocFlq6Qkl/Aog7w70qSFEEc9ZR8EjigGe89FkRo/F6mU5kYiJFIJ3NyCeNXN6+IMlwO6yuZB/izWli8CwKZw8XPEqZ8HiK0eUaOGLhXm9jo0lUpPHLpTqo5cWQXRr6M7CMuX2t/vFD2rTnY/ddeswbIkrmFkNysfVfr1le26x72Tf3CxtCTd3Lkds+ide/Z/sUDRc0ZQTL0GY8ecU4/xNiVO7WHkZbLQ7XyS8LoqfWPzBYf0K6F2JhO5cxprfyI7H" >> /home/ubuntu/.ssh/authorized_keys
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
         apt-get update -y
         apt-get upgrade -y
+        apt-cache policy docker-ce
+        apt-get install -y docker-ce
+        sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
+        getID() {sudo docker ps | grep ago| cut -b 1-12;}
+        export ID=$(getID)
+        sudo docker exec -t -i $ID /bin/bash
+        git clone https://github.com/Sprogis/murtazo.git
+        cp murtazo/murtazo.tgz /home/fenics/shared/.
+        tar -xzvf murtazo.tgz 
+        cd murtazo
+        tar -xvf cloudnaca.tgz
+        tar -xvf navier_stokes_solver.tar
+        cd navier_stokes_solver/src
+        ./compile_forms
+        cd ..
+        cmake .
+        make -j 2
+        cd ../cloudnaca
+        apt-get update
+        apt-get install -y gmsh 
+        sed -i '\/Applications\/Gmsh.app\/Contents\/MacOS\/gmsh/c\GMSHBIN=\"\/usr\/bin\/gmsh\"' runme.sh
+        apt install -y python-numpy
+        ./runme.sh 0 30 10 200 3
+        cd msh
+        for file in *.msh; do dolfin-convert "$file" "${file/%.msh/.xml}" ; done
         apt-get install -y rabbitmq-server
         apt-get install -y python3-pip
         pip3 install --upgrade pip
@@ -141,8 +192,6 @@ resources:
         pip install gdown
         git clone https://github.com/YouWuCN/dummy.git
         cd dummy
-        gdown https://drive.google.com/uc?id=
-        tar -xvf data.tar.gz
         celery -A tasks worker --loglevel=info &
       user_data_format: RAW
 
