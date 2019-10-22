@@ -117,7 +117,7 @@ resources:
         apt-cache policy docker-ce
         apt-get install -y docker-ce
         sudo touch /etc/docker/daemon.json
-        sudo echo "{\"mtu\":1450}" >> /etc/docker/daemon.json
+        sudo echo "{ \"mtu\":1450 }" >> /etc/docker/daemon.json
         sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
         getID() { sudo docker ps | grep ago| cut -b 1-12;}
         export ID=$(getID)
@@ -173,7 +173,7 @@ resources:
         apt-cache policy docker-ce
         apt-get install -y docker-ce
         sudo touch /etc/docker/daemon.json
-        sudo echo "{\"mtu\":1450}" >> /etc/docker/daemon.json
+        sudo echo "{ \"mtu\":1450 }" >> /etc/docker/daemon.json
         sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
         getID() { sudo docker ps | grep ago| cut -b 1-12;}
         export ID=$(getID)
