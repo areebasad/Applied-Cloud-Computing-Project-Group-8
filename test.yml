@@ -107,45 +107,52 @@ resources:
       networks:
         - port: { get_resource: instance_port0 }         
       user_data: |
-        #!/bin/sh
+        #!/bin/bash
         echo "Hello, World!"
         echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQC0mQVQ9hn2ns0R0bk1ud2XzltbJ86ynUMmFumVGe8uQEyxQncnW9UrCw+YLPQ9oBiUegzmTKBF6tx4jzOj2RyocFlq6Qkl/Aog7w70qSFEEc9ZR8EjigGe89FkRo/F6mU5kYiJFIJ3NyCeNXN6+IMlwO6yuZB/izWli8CwKZw8XPEqZ8HiK0eUaOGLhXm9jo0lUpPHLpTqo5cWQXRr6M7CMuX2t/vFD2rTnY/ddeswbIkrmFkNysfVfr1le26x72Tf3CxtCTd3Lkds+ide/Z/sUDRc0ZQTL0GY8ecU4/xNiVO7WHkZbLQ7XyS8LoqfWPzBYf0K6F2JhO5cxprfyI7H" >> /home/ubuntu/.ssh/authorized_keys
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
         apt-get update -y
         apt-get upgrade -y
         apt-cache policy docker-ce
         apt-get install -y docker-ce
-        sudo touch /etc/docker/daemon.json
-        sudo echo "{ \"mtu\":1450 }" >> /etc/docker/daemon.json
-        sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
-        getID() { sudo docker ps | grep ago| cut -b 1-12;}
-        export ID=$(getID)
-        git clone https://github.com/Sprogis/murtazo.git
-        sudo docker cp murtazo/murtazo.tgz $ID:/home/fenics/shared/.
-        sudo docker exec -t -i $ID /bin/bash
-        tar -xzvf murtazo.tgz 
-        cd murtazo
-        tar -xvf cloudnaca.tgz
-        tar -xvf navier_stokes_solver.tar
-        cd navier_stokes_solver/src
-        ./compile_forms
-        cd ..
-        cmake .
-        make -j 2
-        cd ../cloudnaca
-        apt-get update
-        apt-get install -y gmsh 
-        sed -i '\/Applications\/Gmsh.app\/Contents\/MacOS\/gmsh/c\GMSHBIN=\"\/usr\/bin\/gmsh\"' runme.sh
-        apt install -y python-numpy
-        ./runme.sh 0 30 10 200 3
-        cd msh
-        for file in *.msh; do dolfin-convert "$file" "${file/%.msh/.xml}" ; done
-        apt-get install -y rabbitmq-server
-        apt-get install -y python3-pip
-        pip3 install --upgrade pip
-        export LC_ALL=C
-        pip install celery==3.1.25
+        echo "Docker installed"
+        touch /etc/docker/daemon.json
+        echo "{ \"mtu\":1450 }" >> /etc/docker/daemon.json
+        systemctl restart docker
+        echo "Daeomn.json fixed"
+        docker run --name foobar -dt -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
+        echo "Docker Run"
+        docker ps
+        #git clone https://github.com/Sprogis/murtazo.git
+        #docker cp murtazo/murtazo.tgz foobar:/home/fenics/shared/.
+        docker exec -i foobar /bin/bash -c 'git clone https://github.com/Sprogis/murtazo.git'
+        docker exec -i foobar /bin/bash -c 'mv murtazo/murtazo.tgz .; tar -xzvf murtazo.tgz'
+        #tar -xzvf murtazo.tgz 
+        docker exec -i foobar /bin/bash -c 'cd murtazo; tar -xvf cloudnaca.tgz; tar -xvf navier_stokes_solver.tar'
+        #tar -xvf cloudnaca.tgz
+        #tar -xvf navier_stokes_solver.tar
+        docker exec -i foobar /bin/bash -c 'cd murtazo/navier_stokes_solver/src; ./compile_forms; cd ..; cmake .; make -j 2; cd ../cloudnaca; apt-get update; apt-get install -y gmsh'
+        docker exec -i foobar sed -i '\/Applications\/Gmsh.app\/Contents\/MacOS\/gmsh/c\GMSHBIN=\"\/usr\/bin\/gmsh\"' murtazo/cloudnaca/runme.sh
+        docker exec -i foobar /bin/bash -c 'apt install -y python-numpy'
+        docker exec -i foobar /bin/bash -c 'cd murtazo/cloudnaca; ./runme.sh 0 30 10 200 3; cd msh'
+        docker exec -i foobar /bin/bash -c 'cd murtazo/cloudnaca/msh; for file in *.msh; do dolfin-convert "$file" "${file/%.msh/.xml}" ; done'
+        #./compile_forms
+        #cd ..
+        #cmake .
+        #make -j 2
+        #cd ../cloudnaca
+        #apt-get update
+        #apt-get install -y gmsh 
+        #sed -i '\/Applications\/Gmsh.app\/Contents\/MacOS\/gmsh/c\GMSHBIN=\"\/usr\/bin\/gmsh\"' runme.sh
+        #apt install -y python-numpy
+        #./runme.sh 0 30 10 200 3
+        #cd msh
+        docker exec -i foobar apt-get install -y python3-pip
+        docker exec -i foobar pip3 install --upgrade pip
+        docker exec -i foobar export LC_ALL=C
+        docker exec -i foobar pip install celery==3.1.25
+        docker exec -i foobar pip install Flask
 #        pip install gdown
 #        git clone https://github.com/YouWuCN/dummy.git
 #        cd dummy
@@ -163,7 +170,7 @@ resources:
       networks:
         - port: { get_resource: instance_port1 }
       user_data: |
-        #!/bin/sh
+        #!/bin/bash
         echo "Hello, World!"
         echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQC0mQVQ9hn2ns0R0bk1ud2XzltbJ86ynUMmFumVGe8uQEyxQncnW9UrCw+YLPQ9oBiUegzmTKBF6tx4jzOj2RyocFlq6Qkl/Aog7w70qSFEEc9ZR8EjigGe89FkRo/F6mU5kYiJFIJ3NyCeNXN6+IMlwO6yuZB/izWli8CwKZw8XPEqZ8HiK0eUaOGLhXm9jo0lUpPHLpTqo5cWQXRr6M7CMuX2t/vFD2rTnY/ddeswbIkrmFkNysfVfr1le26x72Tf3CxtCTd3Lkds+ide/Z/sUDRc0ZQTL0GY8ecU4/xNiVO7WHkZbLQ7XyS8LoqfWPzBYf0K6F2JhO5cxprfyI7H" >> /home/ubuntu/.ssh/authorized_keys
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -172,37 +179,29 @@ resources:
         apt-get upgrade -y
         apt-cache policy docker-ce
         apt-get install -y docker-ce
-        sudo touch /etc/docker/daemon.json
-        sudo echo "{ \"mtu\":1450 }" >> /etc/docker/daemon.json
-        sudo docker run -td -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
-        getID() { sudo docker ps | grep ago| cut -b 1-12;}
-        export ID=$(getID)
-        git clone https://github.com/Sprogis/murtazo.git
-        sudo docker cp murtazo/murtazo.tgz $ID:/home/fenics/shared/.
-        sudo docker exec -t -i $ID /bin/bash
-        tar -xzvf murtazo.tgz 
-        cd murtazo
-        tar -xvf cloudnaca.tgz
-        tar -xvf navier_stokes_solver.tar
-        cd navier_stokes_solver/src
-        ./compile_forms
-        cd ..
-        cmake .
-        make -j 2
-        cd ../cloudnaca
-        apt-get update
-        apt-get install -y gmsh 
-        sed -i '\/Applications\/Gmsh.app\/Contents\/MacOS\/gmsh/c\GMSHBIN=\"\/usr\/bin\/gmsh\"' runme.sh
-        apt install -y python-numpy
-        ./runme.sh 0 30 10 200 3
-        cd msh
-        for file in *.msh; do dolfin-convert "$file" "${file/%.msh/.xml}" ; done
-        apt-get install -y rabbitmq-server
-        apt-get install -y python3-pip
-        pip3 install --upgrade pip
-        export LC_ALL=C
-        pip install celery==3.1.25
-#        pip install gdown
+        echo "Docker installed"
+        touch /etc/docker/daemon.json
+        echo "{ \"mtu\":1450 }" >> /etc/docker/daemon.json
+        systemctl restart docker
+        echo "Daeomn.json fixed"
+        docker run --name foobar -dt -v $(pwd):/home/fenics/shared -w /home/fenics/shared quay.io/fenicsproject/stable:current
+        echo "Docker Run"
+        docker ps
+        docker exec -i foobar /bin/bash -c 'git clone https://github.com/Sprogis/murtazo.git'
+        docker exec -i foobar /bin/bash -c 'mv murtazo/murtazo.tgz .; tar -xzvf murtazo.tgz'
+        docker exec -i foobar /bin/bash -c 'cd murtazo; tar -xvf cloudnaca.tgz; tar -xvf navier_stokes_solver.tar'
+        docker exec -i foobar /bin/bash -c 'cd murtazo/navier_stokes_solver/src; ./compile_forms; cd ..; cmake .; make -j 2; cd ../cloudnaca; apt-get update; apt-get install -y gmsh'
+        docker exec -i foobar sed -i '\/Applications\/Gmsh.app\/Contents\/MacOS\/gmsh/c\GMSHBIN=\"\/usr\/bin\/gmsh\"' murtazo/cloudnaca/runme.sh
+        docker exec -i foobar /bin/bash -c 'apt install -y python-numpy'
+        docker exec -i foobar /bin/bash -c 'cd murtazo/cloudnaca; ./runme.sh 0 30 10 200 3; cd msh'
+        docker exec -i foobar /bin/bash -c 'cd murtazo/cloudnaca/msh; for file in *.msh; do dolfin-convert "$file" "${file/%.msh/.xml}" ; done'
+
+        docker exec -i foobar apt-get install -y python3-pip
+        docker exec -i foobar pip3 install --upgrade pip
+        docker exec -i foobar export LC_ALL=C
+        docker exec -i foobar pip install celery==3.1.25
+        docker exec -i foobar pip install Flask
+
 #        git clone https://github.com/YouWuCN/dummy.git
 #        cd dummy
 #        celery -A tasks worker --loglevel=info &
