@@ -134,7 +134,9 @@ resources:
         export LC_ALL=C
         pip install celery==3.1.25
         pip install Flask
+        apt-get install rabbitmq-server
         #SETUP CELERY AND RUN IT
+
         user_data_format: RAW
 
   yowu_worker1:
