@@ -104,6 +104,13 @@ resources:
     type: OS::Neutron::Port
     properties:
       network: { get_resource: private_network }
+      fixed_ips:
+        [
+          {
+            "subnet" : {get_resources: private_subnet},
+            "ip_adress" : 10.10.10.8,
+          },
+        ]
       security_groups:
         - { get_resource: AirfoilG8 }
 
@@ -132,9 +139,12 @@ resources:
         apt-get install -y python3-pip
         pip3 install --upgrade pip
         export LC_ALL=C
-        pip install celery==3.1.25
+        pip install celery
         pip install Flask
         apt-get install rabbitmq-server
+        rabbitmqctl add_user airfoil group8
+        rabbitmqctl add_vhost g8host
+        rabbitmqctl set_permissions -p g8host airfoil ".*" ".*" ".*"
         #SETUP CELERY AND RUN IT
 
         user_data_format: RAW
