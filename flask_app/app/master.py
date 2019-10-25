@@ -10,17 +10,13 @@ db = TinyDB('db.json')
 
 @app.route('/test', methods=['GET'])
 def airfoil():
-   #I need to check if this filename is in the database or not and store the result also
-   #String
     airfoilDB = Query()
     dbResponse = db.search(airfoilDB.filename == 'r2a15n200')
-    #print(dbResponse)
     if (not dbResponse):
         data = airfoil_r2a15n200.delay()
         result = data.get()
         record = {'filename': 'r2a15n200', 'result': result}
         db.insert(record)
-        print(db.all)
         return result
     else:
         return(dbResponse[0]['result'])
