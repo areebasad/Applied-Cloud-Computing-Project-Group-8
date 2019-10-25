@@ -3,7 +3,7 @@ from flask import Flask, jsonify
 from tinydb import TinyDB, Query
 import subprocess
 import sys
-from testCelery import airfoil_r2a15n200
+from worker import airfoil_r2a15n200
 
 app = Flask(__name__)
 db = TinyDB('db.json')
