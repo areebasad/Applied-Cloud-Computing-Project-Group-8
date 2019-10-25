@@ -8,6 +8,29 @@ def convertToBinaryData(filename):
         binaryData = file.read()
     return binaryData
 
+
+def insert_db_table(tableName):
+    my_host = os.environ.get('DB_WORKER_HOST')
+    my_database = os.environ.get('DB_DATABASE_NAME')
+    my_user = os.environ.get('DB_USER')
+    my_password = os.environ.get('DB_USER_PASSWORD')
+    my_path_to_data = os.environ.get('PATH_TO_WORKER_RESULTS')
+
+    print("Inserting new table name {} into database {}.".format(tableName,my_database))
+        try:
+            mydb = mysql.connector.connect(host=my_host,
+                                            database=my_database,
+                                            user=my_user,
+                                            password=my_password)
+            mycursor = mydb.cursor()
+            mycursor.execute("CREATE TABLE `tableName` (name VARCHAR(255), file_blob LONGBLOB)")
+
+        except mysql.connector.Error as error:
+            print("Failed to create table database {} with error {}".format(my_database, error))
+
+
+
+
 def insertResult(tableName, fileBlobName , pathToFile):
     my_host = os.environ.get('DB_WORKER_HOST')
     my_database = os.environ.get('DB_DATABASE_NAME')
@@ -41,9 +64,10 @@ def insertResult(tableName, fileBlobName , pathToFile):
             cursor.close()
             connection.close()
             print("MySQL connection is closed")
+    return
 
 
-def insertingAllResults(xmlFileName)
+def insertingAllResults(xmlFileName):
     my_host = os.environ.get('DB_WORKER_HOST')
     my_database = os.environ.get('DB_DATABASE_NAME')
     my_user = os.environ.get('DB_USER')
@@ -71,10 +95,12 @@ def insertingAllResults(xmlFileName)
             print("Failed to get table names in database {} with error {}".format(my_database, error))
 
     if xmlFileName in db_table_name_list:
-        return  print("There is already a result for msh file: {}".format(xmlFileName)
+       return print("There is already a result for msh file: {}".format(xmlFileName))
     else:
+        insert_db_table(xmlFileName)
         for result_file_name in file_list:
             insertResult(xmlFileName, result_file_name, my_path_to_data)
-    print("{} result files are inserted into database.")
+            return print("{} result files are inserted into database."format(my_database))
 
-    
+if __name__ == "__main__":
+    insertingAllResults("r1a0.xml")
