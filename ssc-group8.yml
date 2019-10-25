@@ -22,7 +22,7 @@ parameters:
   image_slave:
     type: string
     label: Image ID of slave image
-    default: Group8_worker
+    default: Group8_worker1
 
   flavor:
     type: string
@@ -82,6 +82,8 @@ resources:
     properties:
       network_id: { get_resource: private_network }
       cidr: 10.10.10.0/24
+      gateway_ip: 10.10.10.1
+      allocation_pools: [{ start: 10.10.10.100, end: 10.10.10.150 }]
       dns_nameservers:
         - 130.238.164.6 
         - 130.238.4.133 
@@ -107,7 +109,7 @@ resources:
       fixed_ips:
         [
           {
-            "subnet" : {get_resources: private_subnet},
+            "subnet" : {get_resource: private_subnet},
             "ip_adress" : 10.10.10.8,
           },
         ]
@@ -145,18 +147,19 @@ resources:
         rabbitmqctl add_user airfoil group8
         rabbitmqctl add_vhost g8host
         rabbitmqctl set_permissions -p g8host airfoil ".*" ".*" ".*"
-        #SETUP CELERY AND RUN IT
-
+        git clone https://github.com/YouWuCN/airfoil.git
+        cd airfoil
+        python3 master.py &
         user_data_format: RAW
 
-  yowu_worker1:
+  airfoil_worker1:
     type: OS::Heat::ResourceGroup
     properties:
       count: { get_param: node_count }
       resource_def:
         type: OS::Nova::Server
         properties:
-          name: g8-airfoil-worker-%index%
+          name: 'g8-airfoil-worker-1'
           image: { get_param: image_slave }
           flavor: { get_param: flavor }
           key_name: { get_param: key }
@@ -169,6 +172,30 @@ resources:
             #!/bin/bash
             echo "Hello, World!"
             docker start foobar
+            docker exec -i foobar /bin/bash -c 'cd murtazo/navier_stokes_solver; nohup celery -A tasks worker -l info &'
+            #START CELERY WORKER IN CONTAINER BELOW
+
+  airfoil_worker2:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: node_count }
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          name: 'g8-airfoil-worker-2'
+          image: { get_param: image_slave }
+          flavor: { get_param: flavor }
+          key_name: { get_param: key }
+          #security_groups:
+            #- { get_resource: AirfoilG8 }
+          networks:
+            - network: { get_resource: private_network }
+          user_data_format: RAW
+          user_data: |
+            #!/bin/bash
+            echo "Hello, World!"
+            docker start foobar
+            docker exec -i foobar /bin/bash -c 'cd murtazo/navier_stokes_solver; nohup celery -A tasks worker -l info &'
             #START CELERY WORKER IN CONTAINER BELOW
 
   floating_ip:
@@ -186,7 +213,7 @@ resources:
 outputs:
   instance_name:
     description: Name of the instance
-    value: { get_attr: [yowu_worker1, name] }
+    value: { get_attr: [master, name] }
   instance_ip:
     description: IP address of the instance
-    value: { get_attr: [yowu_worker1, first_address, floating_ip, floating_ip_address] }
+    value: { get_attr: [master, first_address, floating_ip, floating_ip_address] }
