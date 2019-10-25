@@ -9,21 +9,21 @@ app = Flask(__name__)
 db = TinyDB('db.json')
 
 @app.route('/test', methods=['GET'])
-def airfoil(filename):
+def airfoil():
    #I need to check if this filename is in the database or not and store the result also
    #String
     airfoilDB = Query()
-    dbResponse = db.search(airfoilDB.filename == filename)
-    print(dbResponse)
-    if (len(dbresponse == 0 )):
+    dbResponse = db.search(airfoilDB.filename == 'r2a15n200')
+    #print(dbResponse)
+    if (not dbResponse):
         data = airfoil_r2a15n200.delay()
         result = data.get()
-        record = {'filename': filename, 'result': result}
+        record = {'filename': 'r2a15n200', 'result': result}
         db.insert(record)
         print(db.all)
         return result
     else:
-        print(dbResponse)
+        return(dbResponse[0]['result'])
 
 if __name__ == '__main__':
     
