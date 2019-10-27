@@ -1,4 +1,4 @@
-#Setting up the MariaDB
+# Setting up the MariaDB
 
 Installing MariaDB using apt:
 ```
@@ -9,17 +9,16 @@ After installation secure the server by following the instructions promted by:
 ```
 sudo mysql_secure_installation
 ```
-
-**Tutorial for letting other machines connect the server:**
+### OBS:
+* Tutorial for letting other machines connect the server: 
 [Remote access tutorial](https://www.cyberciti.biz/tips/how-do-i-enable-remote-access-to-mysql-database-server.html)
-
-*The root password will be the same as for the snic API*
-
-
-Then login and create users and databases depending on flavor...
+* The root password will be the same as for the snic API
+* Then login and create users and databases depending on flavor...
 
 
-##Usefull commands in MySQL:
+
+
+## Usefull commands in MySQL:
 
 *Login in*
 ```
