@@ -1,3 +1,0 @@
-/home/fenics/shared/murtazo/navier_stokes_solver/CMakeFiles/rebuild_cache.dir
-/home/fenics/shared/murtazo/navier_stokes_solver/CMakeFiles/airfoil.dir
-/home/fenics/shared/murtazo/navier_stokes_solver/CMakeFiles/edit_cache.dir
