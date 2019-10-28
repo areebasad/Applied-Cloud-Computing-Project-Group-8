@@ -95,9 +95,7 @@ def insertingAllResults(xmlFileFullName):
                     myconnection.close()
                     print("MySQL connection is closed")
     return 
+ 
 
-
-  
-
-if __name__ == "__main__":
-    insertingAllResults("r1a0")
+#if __name__ == "__main__":
+insertingAllResults("r1a02")
