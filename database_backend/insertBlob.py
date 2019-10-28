@@ -63,37 +63,42 @@ def insertingAllResults(xmlFileFullName):
 
     #inserting all the values
     print("Trying to inserting all related file BLOBS into table: {}.".format(xmlFileName))
-    for filename in file_list:
-        try:
-            myconnection = mysql.connector.connect(host=my_host,
-                                            database=my_database,
-                                            user=my_user,
-                                            password=my_password)
-            mycursor = myconnection.cursor()
-            mycursor.execute("SHOW TABLES")
-            
-            for table in mycursor:
-                db_table_name_list.append(table)
+    try:
 
-            if xmlFileName in db_table_name_list:
-                return print("ERROR NOT APPENDING VALUES - There is already a result for msh file: {}".format(xmlFileName))
-            else:
-                insert_db_table(xmlFileName, mycursor)
-                
-                for result_file_name in file_list:
-                    insertResult(myconnection, mycursor, xmlFileName, result_file_name, my_path_to_data)
-
-                print("Successfully inserted all files for msh file {} into table {} in database {}.".format(xmlFileFullName, xmlFileName, my_database))
+        #Connecting to the database
+        myconnection = mysql.connector.connect(host=my_host,
+                                        database=my_database,
+                                        user=my_user,
+                                        password=my_password)
+        mycursor = myconnection.cursor()
         
-        except mysql.connector.Error as error:
-            print("Failed to connect to database with error {}".format(error))
+
+        #Extracting table names
+        mycursor.execute("SHOW TABLES")
+        for table in mycursor:
+            db_table_name_list.append(table)
+
+        #Return if table name already exist, else insert table name
+        if xmlFileName in db_table_name_list:
+            return print("ERROR NOT APPENDING VALUES - There is already a result for msh file: {}".format(xmlFileName))
+        else:
+            insert_db_table(xmlFileName, mycursor)
+            
+            #Insert all files from worker results into database:
+            for result_file_name in file_list:
+                insertResult(myconnection, mycursor, xmlFileName, result_file_name, my_path_to_data)
+
+            print("Successfully inserted all files for msh file {} into table {} in database {}.".format(xmlFileFullName, xmlFileName, my_database))
+    
+    except mysql.connector.Error as error:
+        print("Failed to connect to database with error {}".format(error))
 
 
-        finally:
-            if (myconnection.is_connected()):
-                    mycursor.close()
-                    myconnection.close()
-                    print("MySQL connection is closed")
+    finally:
+        if (myconnection.is_connected()):
+                mycursor.close()
+                myconnection.close()
+                print("MySQL connection is closed")
     return 
  
 
