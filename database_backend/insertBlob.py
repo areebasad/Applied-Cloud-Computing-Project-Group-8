@@ -72,27 +72,32 @@ def insertingAllResults(xmlFileFullName):
                                         password=my_password)
         mycursor = myconnection.cursor()
         
+    except mysql.connector.Error as error:
+        print("Failed to connect to database with error {}".format(error))
+        
 
+    try:
         #Extracting table names
         mycursor.execute("SHOW TABLES")
         for table in mycursor:
             db_table_name_list.append(table)
-
-        #Return if table name already exist, else insert table name
-        if xmlFileName in db_table_name_list:
-            return print("ERROR NOT APPENDING VALUES - There is already a result for msh file: {}".format(xmlFileName))
-        else:
-            insert_db_table(xmlFileName, mycursor)
-            
-            #Insert all files from worker results into database:
-            for result_file_name in file_list:
-                insertResult(myconnection, mycursor, xmlFileName, result_file_name, my_path_to_data)
-
-            print("Successfully inserted all files for msh file {} into table {} in database {}.".format(xmlFileFullName, xmlFileName, my_database))
-    
+        
     except mysql.connector.Error as error:
-        print("Failed to connect to database with error {}".format(error))
+        print("Failed to get tables from database with error {}".format(error))
 
+    #Return if table name already exist
+    if xmlFileName in db_table_name_list:
+        return print("ERROR NOT APPENDING VALUES - There is already a result for msh file: {}".format(xmlFileName))
+    
+    # else insert new table
+    else:
+        insert_db_table(xmlFileName, mycursor)
+        
+        #Insert all files from worker results into table:
+        for result_file_name in file_list:
+            insertResult(myconnection, mycursor, xmlFileName, result_file_name, my_path_to_data)
+
+        print("Successfully inserted all files for msh file {} into table {} in database {}.".format(xmlFileFullName, xmlFileName, my_database))
 
     finally:
         if (myconnection.is_connected()):

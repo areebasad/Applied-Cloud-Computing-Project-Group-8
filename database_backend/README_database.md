@@ -4,6 +4,11 @@ Installing MariaDB using apt:
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt install mariadb-server -y
 ```
+Installing mysql.connector (python) *only for workers*
+```
+sudo locale-gen sv_SE.UTF-8 #This command might be neccesary
+sudo pip3 install mysql-connector-python
+```
 
 After installation secure the server by following the instructions promted by:
 ```
