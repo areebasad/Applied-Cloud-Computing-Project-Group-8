@@ -12,7 +12,11 @@ celery.conf['CELERY_RESULT_SERIALIZER'] = 'json'
 celery.conf['CELERY_ACCEPT_CONTENT'] = ['json', 'pickle']
 
 @celery.task
-def airfoil_r2a15n200():
-    subprocess.run(["./airfoil", "10", "0.0001", "10.", "0.01", "../cloudnaca/msh/r2a15n200.xml"])
+def airfoil_calc(file_name):
+    subprocess.run(["./airfoil", "10", "0.0001", "10.", "0.01", "../cloudnaca/msh/"+file_name])
     f = open('results/drag_ligt.m', 'r')
-    return f.read()
+    m_file = f.read()
+    f.close()
+    return m_file
+
+
