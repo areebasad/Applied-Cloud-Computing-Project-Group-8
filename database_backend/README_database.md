@@ -16,6 +16,7 @@ sudo mysql_secure_installation
 ```
 ### OBS:
 * Tutorial for letting other machines connect the server: 
+[CHECK THIS FIRST](https://stackoverflow.com/questions/46139892/mariadb-refusing-remote-connections)
 [Remote access tutorial](https://www.cyberciti.biz/tips/how-do-i-enable-remote-access-to-mysql-database-server.html)
 [Alternative tutorial](https://mariadb.com/kb/en/library/configuring-mariadb-for-remote-client-access/)
 * Increasing the log file size so longBlob is accepted:
