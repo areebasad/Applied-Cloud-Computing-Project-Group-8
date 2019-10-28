@@ -49,12 +49,12 @@ def insertResult(connection, cursor, tableName, fileBlobFullName , pathToFile):
     return
 
 
-def insertingAllResults(xmlFileFullName):
+def insertingAllResults(xmlFileFullName, pathToResults):
     my_host = os.environ.get('DB_HOST_ADDRESS')
     my_database = os.environ.get('DB_DATABASE_NAME')
     my_user = os.environ.get('DB_USER_WORKER')
     my_password = os.environ.get('DB_PASSWORD_WORKER')
-    my_path_to_data = os.environ.get('PATH_TO_WORKER_RESULTS')
+    my_path_to_data = pathToResults
 
     file_list = os.listdir(my_path_to_data)
     db_table_name_list = []
@@ -101,6 +101,3 @@ def insertingAllResults(xmlFileFullName):
             mycursor.close()
             myconnection.close()
             print("MySQL connection is closed") 
-
-#if __name__ == "__main__":
-insertingAllResults("r1a02")
