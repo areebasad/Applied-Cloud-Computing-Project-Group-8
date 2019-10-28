@@ -74,7 +74,7 @@ def insertingAllResults(xmlFileFullName):
         
     except mysql.connector.Error as error:
         print("Failed to connect to database with error {}".format(error))
-        
+        return
 
     try:
         #Extracting table names
@@ -99,11 +99,11 @@ def insertingAllResults(xmlFileFullName):
 
         print("Successfully inserted all files for msh file {} into table {} in database {}.".format(xmlFileFullName, xmlFileName, my_database))
 
-    finally:
-        if (myconnection.is_connected()):
-            mycursor.close()
-            myconnection.close()
-            print("MySQL connection is closed")
+    #finally:
+    #    if (myconnection.is_connected()):
+    #        mycursor.close()
+    #        myconnection.close()
+    #        print("MySQL connection is closed")
     return
  
 
