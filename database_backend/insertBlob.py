@@ -54,7 +54,7 @@ def insertResult(tableName, fileBlobName , pathToFile):
 
 
         mycursor = myconnection.cursor()
-        sql_insert_blob_query = "INSERT INTO `tableName` (`resultFilename`, `my_fileBlob`)  VALUES (%s, %s)"
+        sql_insert_blob_query = "INSERT INTO "+str(tableName)+ " (`file_name`, `file_blob`)  VALUES (%s, %s)"
 
         my_fileBlob = convertToBinaryData(str(pathToFile+fileBlobName))
 
@@ -118,4 +118,4 @@ def insertingAllResults(xmlFileName):
             return print("{} result files are inserted into database".format(my_database))
 
 if __name__ == "__main__":
-    insertingAllResults("r1a0.xml")
+    insertingAllResults("r1a0")
