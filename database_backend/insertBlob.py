@@ -24,7 +24,8 @@ def insert_db_table(tableName):
                                         user=my_user,
                                         password=my_password)
         mycursor = myconnection.cursor()
-        mycursor.execute("CREATE TABLE `tableName` (file_name VARCHAR(255), file_blob LONGBLOB)")
+        insert_table_query = "CREATE TABLE "+str(tableName)+" (file_name VARCHAR(255), file_blob LONGBLOB)"
+        mycursor.execute(insert_table_query)
 
     except mysql.connector.Error as error:
         print("Failed to create table database {} with error {}".format(my_database, error))

@@ -22,7 +22,7 @@ sudo mysql_secure_installation
 
 *Login in*
 ```
-mysql -u root -p #login as root on localhost
+sudo mysql -u root -p #login as root on localhost
 mysql -u your_user -h your_host -p #login general case
 ````
 
