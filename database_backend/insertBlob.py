@@ -17,7 +17,7 @@ def insert_db_table(tableName, cursor):
     print("Trying to insert new table name {} into database {}.".format(tableName,my_database))
     try:
 
-        insert_table_query = "CREATE TABLE "+str(tableName)+" (file_name VARCHAR(255), file_blob LONGBLOB)"
+        insert_table_query = "CREATE TABLE "+str(tableName)+" (file_name VARCHAR(255),file_extension VARCHAR(255), file_blob LONGBLOB)"
         cursor.execute(insert_table_query)
         print("Successfully inserted table {} into database {}".format(tableName, my_database))
 
@@ -32,13 +32,13 @@ def insert_db_table(tableName, cursor):
 def insertResult(connection, cursor, tableName, fileBlobFullName , pathToFile):
     print("Inserting BLOB into table {}.".format(tableName))
     try:
-        sql_insert_blob_query = "INSERT INTO "+str(tableName)+ " (`file_name`, `file_blob`)  VALUES (%s, %s)"
+        sql_insert_blob_query = "INSERT INTO "+str(tableName)+ " (`file_name`,`file_extension`, `file_blob`)  VALUES (%s, %s, %s)"
 
         my_fileBlob = convertToBinaryData(str(pathToFile+fileBlobFullName))
         my_fileBlobName, separator, extension = fileBlobFullName.partition(".")
 
         # Convert data into tuple format
-        insert_blob_tuple = (my_fileBlobName, my_fileBlob)
+        insert_blob_tuple = (my_fileBlobName, extension, my_fileBlob)
         result = cursor.execute(sql_insert_blob_query, insert_blob_tuple)
         connection.commit()
         print("Successfully inserted {}-blob into MySQL table {}".format(fileBlobFullName, tableName))
@@ -50,10 +50,10 @@ def insertResult(connection, cursor, tableName, fileBlobFullName , pathToFile):
 
 
 def insertingAllResults(xmlFileFullName):
-    my_host = os.environ.get('DB_WORKER_HOST')
+    my_host = os.environ.get('DB_HOST_ADDRESS')
     my_database = os.environ.get('DB_DATABASE_NAME')
-    my_user = os.environ.get('DB_USER')
-    my_password = os.environ.get('DB_USER_PASSWORD')
+    my_user = os.environ.get('DB_USER_WORKER')
+    my_password = os.environ.get('DB_PASSWORD_WORKER')
     my_path_to_data = os.environ.get('PATH_TO_WORKER_RESULTS')
 
     file_list = os.listdir(my_path_to_data)
