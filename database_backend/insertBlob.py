@@ -101,10 +101,10 @@ def insertingAllResults(xmlFileFullName):
 
     finally:
         if (myconnection.is_connected()):
-                mycursor.close()
-                myconnection.close()
-                print("MySQL connection is closed")
-    return 
+            mycursor.close()
+            myconnection.close()
+            print("MySQL connection is closed")
+    return
  
 
 #if __name__ == "__main__":
