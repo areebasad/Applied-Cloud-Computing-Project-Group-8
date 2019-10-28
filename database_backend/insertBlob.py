@@ -58,7 +58,7 @@ def insertResult(tableName, fileBlobName , pathToFile):
         my_fileBlob = convertToBinaryData(str(pathToFile+fileBlobName))
 
         # Convert data into tuple format
-        insert_blob_tuple = (resultFilename, my_fileBlob)
+        insert_blob_tuple = (fileBlobName, my_fileBlob)
         result = mycursor.execute(sql_insert_blob_query, insert_blob_tuple)
         myconnection.commit()
         print("Successfully inserted BLOB into MySQL table {}".format(tableName))
@@ -86,7 +86,7 @@ def insertingAllResults(xmlFileName):
 
     #inserting all the values
     for filename in file_list:
-        print("Inserting BLOBS into table {} BLOB into table {}.".format(tableName, xmlFileName))
+        print("Inserting BLOBS into table {} BLOB into table {}.".format(filename, xmlFileName))
         try:
             myconnection = mysql.connector.connect(host=my_host,
                                             database=my_database,
@@ -113,7 +113,8 @@ def insertingAllResults(xmlFileName):
         insert_db_table(xmlFileName)
         for result_file_name in file_list:
             insertResult(xmlFileName, result_file_name, my_path_to_data)
-            return print("{} result files are inserted into database."format(my_database))
+
+            return print("{} result files are inserted into database".format(my_database))
 
 if __name__ == "__main__":
     insertingAllResults("r1a0.xml")
