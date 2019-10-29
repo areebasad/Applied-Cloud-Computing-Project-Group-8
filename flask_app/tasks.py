@@ -19,4 +19,4 @@ def airfoil_calc(file_name):
     currentPath = os.getcwd()
     pathToResults = currentPath +"/results/"
     insertBlob.insertingAllResults(file_name, pathToResults)
-    return
+    return True

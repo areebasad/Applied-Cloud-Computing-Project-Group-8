@@ -48,4 +48,45 @@ def retrive_result(xmlFileFullName):
             print("MySQL connection is closed")
     return
 	
-retrive_result("r1a02")
+def check_if_result_exists(fullFileName):
+    my_host = os.environ.get('DB_HOST_ADDRESS')
+    my_database = os.environ.get('DB_DATABASE_NAME')
+    my_user = os.environ.get('DB_USER_BROKER')
+    my_password = os.environ.get('DB_PASSWORD_BROKER')
+
+    my_fileName, separator, my_fileExtension = fullFileName.partition(".")
+    db_table_name_list = []
+
+    doesResultExist = None
+
+    try:
+        #Connecting to the database
+        myconnection = mysql.connector.connect(host=my_host,
+                                        database=my_database,
+                                        user=my_user,
+                                        password=my_password)
+        mycursor = myconnection.cursor()
+        
+
+        #Extracting table names
+        mycursor.execute("SHOW TABLES")
+        for table in mycursor:
+            db_table_name_list.append(table)
+        
+        #Return if table name already exist
+        if xmlFileName in db_table_name_list:
+            doesResultExist = True
+        else:
+            doesResultExist = False
+  
+    except mysql.connector.Error as error:
+        print("Failed connecting to database {} and retrive table {} with error {}".format(my_database, my_fileName, error))
+
+    finally:
+        if (myconnection.is_connected()):
+            myconnection.close()
+            mycursor.close()
+            print("MySQL connection is closed")
+    
+    return doesResultExist
+
