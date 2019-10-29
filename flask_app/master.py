@@ -38,7 +38,7 @@ def airfoil():
 def exact_call(level,angle,node):
     fullFileName = "r{}a{}n{}.xml".format(level,angle,node)
     
-    if !readBlob.check_if_result_exists(fullFileName):
+    if not readBlob.check_if_result_exists(fullFileName):
         task = airfoil_calc.delay(fullFileName)
 
     print("The result is calculated, contact admin to download.")
@@ -59,7 +59,7 @@ def range_call(level,first_angle,last_angle,node):
     filesToCalc = xml_files[firstIndex:(lastIndex+1)]
 
     for file in filesToCalc:            
-        if !readBlob.check_if_result_exists(file):
+        if not readBlob.check_if_result_exists(file):
             task = airfoil_calc.delay(fullFileName)
     
     print("The result is calculated, contact admin to download.")
