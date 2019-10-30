@@ -120,48 +120,12 @@ resources:
       security_groups:
         - { get_resource: AirfoilG8 }
 
-  db_port:
-    type: OS::Neutron::Port
-    properties:
-      network: { get_resource: private_network }
-      fixed_ips:
-        [
-          {
-            "subnet" : {get_resource: private_subnet},
-            "ip_address" : 10.10.10.9,
-          },
-        ]
-      security_groups:
-        - { get_resource: AirfoilG8 }
-
   worker_port:
     type: OS::Neutron::Port
     properties:
       network: { get_resource: private_network }
       security_groups:
         - { get_resource: AirfoilG8 }
-
-  Database:
-    type: OS::Nova::Server
-    properties:
-      image: { get_param: image }
-      flavor: { get_param: flavor }
-      key_name: { get_param: key } 
-      networks:
-        - port: { get_resource: db_port}
-      user_data: |
-        #!/bin/bash
-        #STARUP
-        echo "AAAAB3NzaC1yc2EAAAADAQABAAABAQC0mQVQ9hn2ns0R0bk1ud2XzltbJ86ynUMmFumVGe8uQEyxQncnW9UrCw+YLPQ9oBiUegzmTKBF6tx4jzOj2RyocFlq6Qkl/Aog7w70qSFEEc9ZR8EjigGe89FkRo/F6mU5kYiJFIJ3NyCeNXN6+IMlwO6yuZB/izWli8CwKZw8XPEqZ8HiK0eUaOGLhXm9jo0lUpPHLpTqo5cWQXRr6M7CMuX2t/vFD2rTnY/ddeswbIkrmFkNysfVfr1le26x72Tf3CxtCTd3Lkds+ide/Z/sUDRc0ZQTL0GY8ecU4/xNiVO7WHkZbLQ7XyS8LoqfWPzBYf0K6F2JhO5cxprfyI7H" >> /home/ubuntu/.ssh/authorized_keys
-        apt-get -y update
-        apt-get -y upgrade
-        apt install mariadb-server -y
-        apt-get install -y python3-pip
-        pip3 install --upgrade pip
-        export LC_ALL=C
-        pip install mysql-connector-python
-        mysql_secure_installation
-        user_data_format: RAW
 
   master:
     type: OS::Nova::Server
