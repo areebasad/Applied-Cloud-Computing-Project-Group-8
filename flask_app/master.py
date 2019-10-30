@@ -77,13 +77,15 @@ def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
     for l in range(level+1):
         for a in range(first_angle,last_angle+step,step):
             filenames.append("r{}a{}n{}.xml".format(l,a,nodes))
-    
+
     for filename in filenames:
         if not readBlob.check_if_result_exists(filename):
             task = airfoil_calc.delay(filename)
-            task.get()
     
-    return "The result is calculated, contact admin to download."
+    if task.get():
+        return "The result is calculated, contact admin to download."
+    else:
+        return "Things didn't work out as expected."
 
 
 
