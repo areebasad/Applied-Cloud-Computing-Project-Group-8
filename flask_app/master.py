@@ -82,11 +82,13 @@ def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
         if not readBlob.check_if_result_exists(filename):
             task = airfoil_calc.delay(filename)
     
-    if task.get():
-        return "The result is calculated, contact admin to download."
-    else:
-        return "Things didn't work out as expected."
-
+    try: 
+        if task.get():
+            return "The result is calculated, contact admin to download."
+        else:
+            return "Things didn't work out as expected."
+    except:
+        return "Those parameters have been calculated before, contact admin to download."
 
 
 if __name__ == '__main__':
