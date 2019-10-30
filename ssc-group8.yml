@@ -145,7 +145,7 @@ resources:
         apt-get install -y python3-pip
         pip3 install --upgrade pip
         export LC_ALL=C
-        pip install celery
+        pip install celery==3.1.25
         pip install Flask
         pip install mysql-connector-python
         apt-get install -y rabbitmq-server
