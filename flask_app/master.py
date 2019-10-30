@@ -68,6 +68,11 @@ def range_call(level,first_angle,last_angle,node):
 @app.route('/parameter/<first_angle>/<last_angle>/<ndiv>/<nodes>/<level>', methods=['GET'])
 def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
     filenames = []
+    first_angle = int(first_angle)
+    last_angle = int(last_angle)
+    ndiv = int(ndiv)
+    nodes = int(nodes)
+    level = int(level)
     step = int(last_angle/ndiv)
     for l in range(level+1):
         for a in range(first_angle,last_angle+step,step):
@@ -75,7 +80,8 @@ def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
     
     for filename in filenames:
         if not readBlob.check_if_result_exists(filename):
-            airfoil_calc.delay(filename)
+            task = airfoil_calc.delay(filename)
+            task.get()
     
     return "The result is calculated, contact admin to download."
 

@@ -70,23 +70,28 @@ def check_if_result_exists(fullFileName):
 
         #Extracting table names
         mycursor.execute("SHOW TABLES")
-        for table in mycursor:
+        for (table,) in mycursor:
             db_table_name_list.append(table)
         
         #Return if table name already exist
-        if xmlFileName in db_table_name_list:
+        if my_fileName in db_table_name_list:
             doesResultExist = True
         else:
             doesResultExist = False
   
-    except mysql.connector.Error as error:
-        print("Failed connecting to database {} and retrive table {} with error {}".format(my_database, my_fileName, error))
-
-    finally:
         if (myconnection.is_connected()):
             myconnection.close()
             mycursor.close()
             print("MySQL connection is closed")
+
+    except mysql.connector.Error as error:
+        print("Failed connecting to database {} and retrive table {} with error {}".format(my_database, my_fileName, error))
+
+#    finally:
+#        if (myconnection.is_connected()):
+#            myconnection.close()
+#            mycursor.close()
+#            print("MySQL connection is closed")
     
     return doesResultExist
 
