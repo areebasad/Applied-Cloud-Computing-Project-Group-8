@@ -4,7 +4,7 @@ import insertBlob
 import subprocess
 from celery import Celery
 
-CELERY_BROKER_URL = 'pyamqp://airfoil:group8@10.10.10.10/g8host'
+CELERY_BROKER_URL = 'pyamqp://airfoil:group8@10.10.10.8/g8host'
 CELERY_RESULT_BACKEND = 'rpc://'
 
 task_name = sys.argv[0][:-3]
