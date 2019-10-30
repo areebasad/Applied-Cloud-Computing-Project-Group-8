@@ -154,6 +154,7 @@ resources:
         rabbitmqctl set_permissions -p g8host airfoil ".*" ".*" ".*"
         git clone https://github.com/areebasad/Applied-Cloud-Computing-Project-Group-8.git
         cd Applied-Cloud-Computing-Project-Group-8/flask_app
+        source db_broker_source_file.sh
         python3 master.py &
         user_data_format: RAW
 
@@ -177,7 +178,7 @@ resources:
             #!/bin/bash
             echo "Hello, World!"
             docker start foobar
-            docker exec -i foobar /bin/bash -c 'export C_FORCE_ROOT=1; cd murtazo/navier_stokes_solver; nohup celery -A tasks worker -l info &'
+            docker exec -i foobar /bin/bash -c 'export C_FORCE_ROOT=1; cd murtazo/navier_stokes_solver; source db_worker_source_file.sh; nohup celery -A tasks worker -l info &'
             #START CELERY WORKER IN CONTAINER BELOW
 
   floating_ip:
