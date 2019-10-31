@@ -124,10 +124,25 @@ celery -A tasks flower --port=5555
 ```
 ### Web Interface:
 ```
-http://130.238.28.214:5555/dashboard
+http://130.238.28.214:5555/
 ```
 #### To Kill Flower App
 ```
 fuser -n tcp -k 5555
 ```
+
+## RabbitMQ
+
+### Enable Web Interface Command:
+```
+sudo rabbitmq-plugins enable rabbitmq_management
+```
+
+### Set User to Administrator:
+```
+rabbitmqctl set_user_tags airfoil administrator
+```
+### Web Interface:
+```
+http://130.238.28.214:15672/
 
