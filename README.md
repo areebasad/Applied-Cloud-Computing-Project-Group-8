@@ -126,3 +126,8 @@ celery -A tasks flower --port=5555
 ```
 http://130.238.28.214:5555/dashboard
 ```
+#### To Kill Flower App
+```
+fuser -n tcp -k 5555
+```
+
