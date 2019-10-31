@@ -112,3 +112,14 @@ SHOW TABLES;
 #Use certain database
 USE database_name;
 ```   
+
+##Flower
+
+##Install Command
+ sudo pip install wheel flower
+ 
+##Running Flower to monitor workers
+celery -A tasks flower --port=5555
+
+##Check on
+http://130.238.28.214:5555/dashboard
