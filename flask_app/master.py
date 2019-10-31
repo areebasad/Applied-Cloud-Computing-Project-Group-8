@@ -106,7 +106,7 @@ def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
                     error_message += filename+' failed to be calculated within 1000s. '
                     break
                 
-        if len(error_message == 0):
+        if len(error_message) == 0:
             error_message = "Succeeded!"
 
         return error_message + " The result is calculated, contact admin to download."
