@@ -5,6 +5,7 @@ from flask import Flask
 #import os
 #import sys
 import readBlob
+import time
 from tasks import airfoil_calc
 
 app = Flask(__name__)
@@ -35,14 +36,26 @@ xml_files.sort()
 
 @app.route('/exact_call/<level>/<angle>/<node>/', methods=['GET'])  
 def exact_call(level,angle,node):
-    fullFileName = "r{}a{}n{}.xml".format(level,angle,node)
+    filename = "r{}a{}n{}.xml".format(level,angle,node)
     
-    if not readBlob.check_if_result_exists(fullFileName):
-        airfoil_calc.delay(fullFileName)
+    if not readBlob.check_if_result_exists(filename):
+        airfoil_calc.delay(filename)
+    
+    error_message = ""    
+    t = 0
+    while not readBlob.check_if_result_exists(filename):
+        time.sleep(1)
+        t += 1
+        if t > 1000:
+            error_message = filename+' failed to be calculated within 1000s. '
+            break
 
-    print("The result is calculated, contact admin to download.")
+    if len(error_message == 0):
+        error_message = "Succeeded!"
+
+    return error_message+"The result is calculated, contact admin to download."
     
-    return fullFileName 
+#    return fullFileName 
 
 
 
@@ -80,13 +93,24 @@ def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
 
     for filename in filenames:
         if not readBlob.check_if_result_exists(filename):
-            task = airfoil_calc.delay(filename)
+            airfoil_calc.delay(filename)
     
+    error_message = ""
     try: 
-        if task.get():
-            return "The result is calculated, contact admin to download."
-        else:
-            return "Things didn't work out as expected."
+        for filename in filenames:
+            t = 0
+            while not readBlob.check_if_result_exists(filename):
+                time.sleep(1)
+                t += 1
+                if t > 1000:
+                    error_message += filename+' failed to be calculated within 1000s. '
+                    break
+                
+        if len(error_message == 0):
+            error_message = "Succeeded!"
+
+        return error_message + " The result is calculated, contact admin to download."
+
     except:
         return "Those parameters have been calculated before, contact admin to download."
 
