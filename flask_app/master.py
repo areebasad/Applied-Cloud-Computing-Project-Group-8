@@ -96,23 +96,21 @@ def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
             airfoil_calc.delay(filename)
     
     error_message = ""
-    try: 
-        for filename in filenames:
-            t = 0
-            while not readBlob.check_if_result_exists(filename):
-                time.sleep(1)
-                t += 1
-                if t > 1000:
-                    error_message += filename+' failed to be calculated within 1000s. '
-                    break
-                
-        if len(error_message) == 0:
-            error_message = "Succeeded!"
+    
+    for filename in filenames:
+        t = 0
+        while not readBlob.check_if_result_exists(filename):
+            time.sleep(1)
+            t += 1
+            if t > 1000:
+                error_message += filename+' failed to be calculated within 1000s. '
+                break
 
-        return error_message + " The result is calculated, contact admin to download."
+    if len(error_message) == 0:
+        error_message = "Succeeded!"
 
-    except:
-        return "Those parameters have been calculated before, contact admin to download."
+    return error_message + " The result is calculated, contact admin to download."
+
 
 
 if __name__ == '__main__':
