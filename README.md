@@ -114,11 +114,15 @@ USE database_name;
 ```   
 ## Flower
 
-# Install Command:
+### Install Command:
+```
  sudo pip install wheel flower
- 
-# Running Flower to monitor workers:
+ ```
+### Running Flower to monitor workers:
+```
 celery -A tasks flower --port=5555
-
-# Web Interface:
+```
+### Web Interface:
+```
 http://130.238.28.214:5555/dashboard
+```
