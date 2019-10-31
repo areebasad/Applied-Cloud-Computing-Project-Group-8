@@ -73,7 +73,7 @@ def user_defined_call(first_angle,last_angle,ndiv,nodes,level):
     ndiv = int(ndiv)
     nodes = int(nodes)
     level = int(level)
-    step = int(last_angle/ndiv)
+    step = int((last_angle-first_angle)/ndiv)
     for l in range(level+1):
         for a in range(first_angle,last_angle+step,step):
             filenames.append("r{}a{}n{}.xml".format(l,a,nodes))

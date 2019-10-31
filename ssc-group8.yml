@@ -72,6 +72,10 @@ resources:
           port_range_max: 5000
         - protocol: icmp
         - protocol: tcp
+          port_range_min: 5555
+          port_range_max: 5555
+        - protocol: icmp
+        - protocol: tcp
           port_range_min: 5672
           port_range_max: 5672
 
@@ -147,6 +151,7 @@ resources:
         export LC_ALL=C
         pip install celery==3.1.25
         pip install Flask
+        pip install wheel flower
         pip install mysql-connector-python
         apt-get install -y rabbitmq-server
         rabbitmqctl add_user airfoil group8
@@ -156,6 +161,7 @@ resources:
         cd Applied-Cloud-Computing-Project-Group-8/flask_app
         source db_broker_source_file.sh
         python3 master.py &
+        celery -A tasks flower --port=5555
         user_data_format: RAW
 
   airfoil_worker:
@@ -178,7 +184,7 @@ resources:
             #!/bin/bash
             echo "Hello, World!"
             docker start foobar
-            docker exec -i foobar /bin/bash -c 'export C_FORCE_ROOT=1; cd murtazo/navier_stokes_solver; source db_worker_source_file.sh; nohup celery -A tasks worker -l info &'
+            docker exec -i foobar /bin/bash -c 'export C_FORCE_ROOT=1; cd murtazo/navier_stokes_solver; source db_worker_source_file.sh; nohup celery -A tasks worker -n %h -l info &'
             #START CELERY WORKER IN CONTAINER BELOW
 
   floating_ip:
